@@ -17,8 +17,4 @@ import Settings from '@/components/Settings.vue';
   </main>
 </template>
 
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
+<style scoped></style>
