@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { difficulties, themes, useStore, type Difficulty, type Theme } from '@/composables/useStore';
+import { difficulties, modes, themes, useStore, type Difficulty, type Theme } from '@/composables/useStore';
 
-const { difficulty, theme } = useStore()
+const { difficulty, theme, mode } = useStore()
 
 const difficultyTrads: Record<Difficulty, string> = {
   easy: 'facile',
@@ -18,13 +18,22 @@ const themeTrads: Record<Theme, string> = {
 </script>
 
 <template>
-  <div>
+  <div class="mt-10">
+    <fieldset class="fieldset">
+      <legend class="fieldset-legend">Mode</legend>
+      <select v-model="mode" class="select">
+        <option v-for="mode of modes" :value="mode" :key="mode">{{
+          mode
+        }}</option>
+      </select>
+    </fieldset>
+
     <fieldset class="fieldset">
       <legend class="fieldset-legend">Difficulté</legend>
       <select v-model="difficulty" class="select">
         <option v-for="name of difficulties" :value="name" :key="name">{{
           difficultyTrads[name]
-          }}</option>
+        }}</option>
       </select>
     </fieldset>
 
@@ -33,7 +42,7 @@ const themeTrads: Record<Theme, string> = {
       <select v-model="theme" class="select">
         <option v-for="name of themes" :value="name" :key="name">{{
           themeTrads[name]
-          }}</option>
+        }}</option>
       </select>
     </fieldset>
   </div>

@@ -22,7 +22,7 @@ export default defineConfig({
         name: "Constellation des nombres",
         short_name: "Nombres",
         description:
-          "Outil pour aider les enfants à se représenter les nombres afin de leur rendre les calculs plus instinctifs.",
+          "Outil pour aider les enfants à se représenter les nombres afin de leur rendre les calculs plus intuitif.",
         theme_color: "#faf7f5",
       },
 
