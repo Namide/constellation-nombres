@@ -1,3 +1,12 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+ifneq (,$(wildcard docker/.env))
+    include docker/.env
+    export
+endif
 
 install:
 	@docker run -ti --rm \
@@ -36,3 +45,9 @@ code:
 		-e NPM_CONFIG_PREFIX=/home/node/.npm-global \
 		node:slim \
 		bash
+
+deploy:
+	$(MAKE) install
+	$(MAKE) build
+	@rsync -ru dist/* ${SFTP_USER}@${SFTP_HOST}:constellation.namide.com
+	@echo "✅ deployed"
