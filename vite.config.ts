@@ -20,10 +20,11 @@ export default defineConfig({
 
       manifest: {
         name: "Constellation des nombres",
-        short_name: "Nombres",
+        short_name: "Constellation",
         description:
           "Outil pour aider les enfants à se représenter les nombres afin de leur rendre les calculs plus intuitif.",
-        theme_color: "#faf7f5",
+        theme_color: "#5d60f0",
+        display: "fullscreen",
       },
 
       workbox: {

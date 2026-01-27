@@ -5,6 +5,6 @@
       <stop offset="100%" stop-color="#BD34FE" />
    </linearGradient>
 </defs>
-<rect width="22" height="22" x="1" y="1" rx="2" ry="2" fill="url(#grad)"/>
+<rect width="24" height="24" x="0" y="0" rx="0" ry="0" fill="url(#grad)"/>
 <path d="M12 12h.01" stroke-width="8" stroke="#FFDD35"/>
 </svg>
