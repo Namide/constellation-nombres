@@ -3,7 +3,7 @@ import Constellation from '@/components/Constellation.vue';
 import { useStore } from '@/composables/useStore';
 import { createRNG } from '@/helpers/createRNG';
 import { type ConstellationNum } from '@/types/Constellation';
-import { useRafFn } from '@vueuse/core';
+import { useRafFn, useWakeLock } from '@vueuse/core';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -11,6 +11,9 @@ const LOOP_COUNT = 20
 
 const router = useRouter()
 const { difficulty, mode, landscape } = useStore()
+const { release } = useWakeLock()
+
+release()
 
 const state = ref<'pause' | 'display' | 'hide' | 'soluce'>('pause')
 const loop = ref(0)
@@ -92,7 +95,7 @@ useRafFn
 
       <span v-if="nums !== undefined && state === 'soluce'" class="text-9xl">{{nums.reduce((total, num) => total +
         num)
-      }}</span>
+        }}</span>
     </div>
 
     <div class="dock dock-xl">
