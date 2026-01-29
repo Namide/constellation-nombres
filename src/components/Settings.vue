@@ -14,6 +14,7 @@ const themeTrads: Record<Theme, string> = {
   cupcake: 'clair',
   dim: 'sombre',
   valentine: 'rose',
+  bumblebee: 'bourdon',
 }
 </script>
 
@@ -24,7 +25,7 @@ const themeTrads: Record<Theme, string> = {
       <select v-model="mode" class="select">
         <option v-for="mode of modes" :value="mode" :key="mode">{{
           mode
-        }}</option>
+          }}</option>
       </select>
     </fieldset>
 
@@ -33,7 +34,7 @@ const themeTrads: Record<Theme, string> = {
       <select v-model="difficulty" class="select">
         <option v-for="name of difficulties" :value="name" :key="name">{{
           difficultyTrads[name]
-        }}</option>
+          }}</option>
       </select>
     </fieldset>
 
@@ -42,7 +43,7 @@ const themeTrads: Record<Theme, string> = {
       <select v-model="theme" class="select">
         <option v-for="name of themes" :value="name" :key="name">{{
           themeTrads[name]
-        }}</option>
+          }}</option>
       </select>
     </fieldset>
   </div>

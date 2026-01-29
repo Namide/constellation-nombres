@@ -15,12 +15,14 @@ const modal = useTemplateRef<HTMLDialogElement>('modal')
         </form>
         <h2 class="text-lg font-bold">Infos</h2>
         <div class="py-4">
-          <p class="text-balance">C'est un outil pour entrainer les enfants à se représenter afin de leur rendre par la
-            suite les calculs plus intuitif.
+          <p class="text-balance">Constellation des nombres est un outil pour entrainer les enfants à se représenter les
+            nombres autrement afin de leur rendre par la suite les calculs plus intuitif.
           </p>
           <p class="text-balance mt-4">Il faut jouer à plusieurs en plaçant l'écran visible pour tous. Il faut être le
-            premier à
-            donner le nombre avant que la solution ne s'affiche.
+            premier à donner le nombre avant que la solution ne s'affiche.
+          </p>
+          <p class="text-balance mt-4">Attention à ce que les enfants ne fassent ne fassent pas des calculs sans se
+            servir de ce qu'ils voient.
           </p>
           <p class="text-balance mt-4">Si vous souhaitez donner votre avis ou participer au développement rendez-vous
             sur

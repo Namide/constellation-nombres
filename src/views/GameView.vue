@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Constellation from '@/components/Constellation.vue';
 import { useStore } from '@/composables/useStore';
-import { type ConstellationNum, constellationNums } from '@/types/Constellation';
+import { createRNG } from '@/helpers/createRNG';
+import { type ConstellationNum } from '@/types/Constellation';
 import { useRafFn } from '@vueuse/core';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -15,6 +16,11 @@ const state = ref<'pause' | 'display' | 'hide' | 'soluce'>('pause')
 const loop = ref(0)
 const lastChange = ref<number | undefined>(Date.now())
 const nums = ref<[ConstellationNum] | [ConstellationNum, ConstellationNum]>([1])
+const random = {
+  "1-10": createRNG(0, 10),
+  "10-20": createRNG(0, 10),
+  "addition": createRNG(0, 10),
+}[mode.value]
 
 useRafFn
   (async () => {
@@ -42,19 +48,19 @@ useRafFn
           switch (mode.value) {
             case '1-10':
               nums.value = [
-                constellationNums[Math.floor(constellationNums.length * Math.random())] as 1
+                random() as 1
               ]
               break
             case '10-20':
               nums.value = [
                 10,
-                constellationNums[Math.floor((constellationNums.length - 1) * Math.random() + 1)] as 1,
+                random() as 1
               ]
               break
             case 'addition':
               nums.value = [
-                constellationNums[Math.floor((constellationNums.length - 1) * Math.random() + 1)] as 1,
-                constellationNums[Math.floor((constellationNums.length - 1) * Math.random() + 1)] as 1,
+                random() as 1,
+                random() as 1
               ]
               break
           }
@@ -86,7 +92,7 @@ useRafFn
 
       <span v-if="nums !== undefined && state === 'soluce'" class="text-9xl">{{nums.reduce((total, num) => total +
         num)
-        }}</span>
+      }}</span>
     </div>
 
     <div class="dock dock-xl">

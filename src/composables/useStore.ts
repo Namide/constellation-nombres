@@ -20,7 +20,13 @@ const difficulty = ref<Difficulty>(
 );
 
 // Theme
-export const themes = ["default", "dim", "cupcake", "valentine"] as const;
+export const themes = [
+  "default",
+  "dim",
+  "cupcake",
+  "valentine",
+  "bumblebee",
+] as const;
 export type Theme = (typeof themes)[number];
 const theme = ref<Theme>(
   (window.localStorage?.getItem("theme") as Theme) || "default",
