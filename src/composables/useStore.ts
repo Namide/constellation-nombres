@@ -25,7 +25,7 @@ export const themes = [
   "dim",
   "cupcake",
   "valentine",
-  "bumblebee",
+  "gold",
 ] as const;
 export type Theme = (typeof themes)[number];
 const theme = ref<Theme>(

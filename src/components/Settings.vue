@@ -14,7 +14,7 @@ const themeTrads: Record<Theme, string> = {
   cupcake: 'clair',
   dim: 'sombre',
   valentine: 'rose',
-  bumblebee: 'bourdon',
+  gold: 'or',
 }
 </script>
 
