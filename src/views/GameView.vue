@@ -5,7 +5,7 @@ import { useStore } from '@/composables/useStore';
 import { createRNGFromTo, createRNGFromList } from '@/helpers/createRNG';
 import { type ConstellationNum } from '@/types/Constellation';
 import { useRafFn, useWakeLock } from '@vueuse/core';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Points from '@/components/Points.vue';
 
@@ -13,13 +13,24 @@ const LOOP_COUNT = 20
 
 const router = useRouter()
 const { difficulty, mode, landscape } = useStore()
-const { release } = useWakeLock()
+const { release, request } = useWakeLock()
 
-release()
+onMounted(() => request('screen'))
+onUnmounted(() => release())
 
 const state = ref<'pause' | 'display' | 'hide' | 'soluce'>('pause')
 const loop = ref(0)
 const lastChange = ref<number | undefined>(Date.now())
+const ratio = [5, Number({
+  "1-10": 2,
+  "10-20": 5,
+  "addition": 5,
+  "div-2": 5,
+  "div-3": 5,
+  "div-mult": 5,
+  "div-mult-rest": 5,
+  "20-div-mult": 8,
+}[mode.value])] as const
 
 const questionDisplay = ref<({ type: 'operator', value: string } | { type: 'constellation', value: ConstellationNum } | { type: 'points', value: ConstellationNum })[]>([])
 const responseDisplay = ref<({ type: 'strong', value: string } | { type: 'normal', value: string } | { type: 'points', value: ConstellationNum })[]>([])
@@ -221,9 +232,16 @@ useRafFn
 </script>
 
 <template>
-  <main class="min-h-dvh flex flex-col items-center justify-center">
-    <div class="text-center flex flex-col justify-center items-center gap-4"
-      :class="{ 'rotate-90 w-[50dvh]': landscape, 'w-10/12 md:w-1/2': !landscape }">
+  <main class="min-h-dvh overflow-hidden">
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[calc(-50%-40px)] text-center flex flex-col justify-center items-center gap-4"
+      :class="{
+        'rotate-90 w-[calc(90dvh-80px)]': landscape,
+        'w-10/12 md:w-1/2': !landscape
+      }" :style="{
+        aspectRatio: `${ratio[0]} / ${ratio[1]}`,
+        maxWidth: landscape ? `calc(${ratio[0] * 90 / ratio[1]}vw)` : `calc(${ratio[0] / ratio[1]} * 90dvh - 80px)`
+      }">
 
       <template v-if="state === 'display'" v-for="item of questionDisplay">
 
