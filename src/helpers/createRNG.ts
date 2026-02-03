@@ -1,9 +1,17 @@
 /**
- * Creates a random number generator.
+ * Creates a random number generator between and equal to min and max values.
  * It ensures that the same numbers are not repeated several times in a row.
  */
-export function createRNG(min = 0, max = 10) {
+export function createRNGFromTo(min = 0, max = 10) {
   const list = new Array(1 + max - min).fill(1).map((_, index) => index + min);
+  return createRNGFromList(list);
+}
+
+/**
+ * Creates a random number generator from a list.
+ * It ensures that the same numbers are not repeated several times in a row.
+ */
+export function createRNGFromList(list: number[]) {
   const rest = [...list];
   return () => {
     if (rest.length < 1) {

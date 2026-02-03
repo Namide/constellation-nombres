@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import Constellation from '@/components/Constellation.vue';
+import Soluce from '@/components/Soluce.vue';
 import { useStore } from '@/composables/useStore';
-import { createRNG } from '@/helpers/createRNG';
+import { createRNGFromTo, createRNGFromList } from '@/helpers/createRNG';
 import { type ConstellationNum } from '@/types/Constellation';
 import { useRafFn, useWakeLock } from '@vueuse/core';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import Points from '@/components/Points.vue';
 
 const LOOP_COUNT = 20
 
@@ -18,11 +20,19 @@ release()
 const state = ref<'pause' | 'display' | 'hide' | 'soluce'>('pause')
 const loop = ref(0)
 const lastChange = ref<number | undefined>(Date.now())
-const nums = ref<[ConstellationNum] | [ConstellationNum, ConstellationNum]>([1])
+
+const questionDisplay = ref<({ type: 'operator', value: string } | { type: 'constellation', value: ConstellationNum } | { type: 'points', value: ConstellationNum })[]>([])
+const responseDisplay = ref<({ type: 'strong', value: string } | { type: 'normal', value: string } | { type: 'points', value: ConstellationNum })[]>([])
+
 const random = {
-  "1-10": createRNG(0, 10),
-  "10-20": createRNG(0, 10),
-  "addition": createRNG(0, 10),
+  "1-10": createRNGFromTo(0, 10),
+  "10-20": createRNGFromTo(0, 10),
+  "addition": createRNGFromTo(1, 9),
+  "div-2": createRNGFromList([2, 4, 6, 8, 10]),
+  "div-3": createRNGFromList([3, 6, 9]),
+  "div-mult": createRNGFromList([3, 6, 9]),
+  "div-mult-rest": createRNGFromTo(2, 10),
+  "20-div-mult": createRNGFromTo(1, 10),
 }[mode.value]
 
 useRafFn
@@ -37,7 +47,7 @@ useRafFn
       pause: 1000,
       display:
         { easy: 2000, medium: 500, hard: 250 }[difficulty.value] *
-        { "1-10": 1, "10-20": 1.5, "addition": 2 }[mode.value],
+        { "1-10": 1, "10-20": 1.5, addition: 2, "div-2": 2, "div-3": 2, "div-mult": 2, "div-mult-rest": 2, "20-div-mult": 2 }[mode.value],
       hide: 2000,
       soluce: 2000
     }
@@ -49,23 +59,145 @@ useRafFn
           state.value = 'display'
 
           switch (mode.value) {
-            case '1-10':
-              nums.value = [
-                random() as 1
-              ]
+            case '1-10': {
+              const num = random() as ConstellationNum
+              questionDisplay.value = [{ type: 'constellation', value: num }]
+              responseDisplay.value = [{ type: 'strong', value: `${num}` }]
               break
-            case '10-20':
-              nums.value = [
-                10,
-                random() as 1
-              ]
+            }
+            case '10-20': {
+              const num = random() as ConstellationNum
+              questionDisplay.value = [{ type: 'constellation', value: 10 }, { type: 'constellation', value: num }]
+              responseDisplay.value = [{ type: 'strong', value: `${10 + num}` }]
               break
-            case 'addition':
-              nums.value = [
-                random() as 1,
-                random() as 1
+            }
+            case 'addition': {
+              const num1 = random() as ConstellationNum
+              const num2 = random() as ConstellationNum
+              questionDisplay.value = [
+                { type: 'constellation', value: num1 },
+                { type: 'operator', value: '+' },
+                { type: 'constellation', value: num2 }
               ]
+              responseDisplay.value = [{ type: 'strong', value: `${num1 + num2}` }]
               break
+            }
+            case 'div-2': {
+              const num = random() as ConstellationNum
+              questionDisplay.value = [
+                { type: 'constellation', value: num },
+                { type: 'operator', value: '÷' },
+                { type: 'points', value: 2 }
+              ]
+              responseDisplay.value = [
+                { type: 'strong', value: `${(num / 2).toFixed(0)}` },
+                { type: 'points', value: 2 }
+              ]
+              // + = × ÷
+              break
+            }
+            case 'div-3': {
+              const num = random() as ConstellationNum
+              questionDisplay.value = [
+                { type: 'constellation', value: num },
+                { type: 'operator', value: '÷' },
+                { type: 'points', value: 3 }
+              ]
+              responseDisplay.value = [
+                { type: 'strong', value: `${(num / 3).toFixed(0)}` },
+                { type: 'points', value: 3 }
+              ]
+              // + = × ÷
+              break
+            }
+            case 'div-mult': {
+              const num = random() as ConstellationNum
+              const divisors = [5, 4, 3, 2].filter(div => Math.round(num / div) === num / div) || [2]
+              const divisor = divisors[Math.floor(Math.random() * divisors.length)]!
+              questionDisplay.value = [
+                { type: 'constellation', value: num },
+                { type: 'operator', value: '÷' },
+                { type: 'points', value: divisor }
+              ]
+              responseDisplay.value = [
+                { type: 'strong', value: `${(num / divisor).toFixed(0)}` },
+                { type: 'points', value: divisor }
+              ]
+              // + = × ÷
+              break
+            }
+            case 'div-mult-rest': {
+              const num = random() as ConstellationNum
+              const divisors = [5, 4, 3, 2].filter(div => num / div >= 2)
+              if (divisors.length < 1) {
+                divisors.push(...[5, 4, 3, 2].filter(div => num / div >= 1))
+              }
+              const divisor = divisors[Math.floor(Math.random() * divisors.length)]!
+              questionDisplay.value = [
+                { type: 'constellation', value: num },
+                { type: 'operator', value: '÷' },
+                { type: 'points', value: Math.floor(divisor) }
+              ]
+
+              const intQuotient = Math.floor(num / divisor)
+              const rest = Math.round(num - intQuotient * divisor)
+              responseDisplay.value = [
+                { type: 'strong', value: `${(intQuotient).toFixed(0)}` },
+                { type: 'points', value: divisor }
+              ]
+
+              if (rest > 0) {
+                // responseDisplay.value.push(
+                //   { type: 'normal', value: `+` },
+                //   { type: 'strong', value: `${rest.toFixed(0)}` }
+                // )
+                responseDisplay.value.push(
+                  { type: 'normal', value: `+` },
+                  { type: 'strong', value: `${rest.toFixed(0)}` },
+                  { type: 'points', value: 1 },
+                )
+              }
+
+              // + = × ÷
+              break
+            }
+            case '20-div-mult': {
+              const num2 = random() as ConstellationNum
+              const num = num2 + 10
+              const divisors = [5, 4, 3, 2].filter(div => num / div >= 2)
+              if (divisors.length < 1) {
+                divisors.push(...[5, 4, 3, 2].filter(div => num / div >= 1))
+              }
+              const divisor = divisors[Math.floor(Math.random() * divisors.length)]!
+              questionDisplay.value = [
+                { type: 'constellation', value: 10 },
+                { type: 'constellation', value: num2 },
+                { type: 'operator', value: '÷' },
+                { type: 'points', value: Math.floor(divisor) }
+              ]
+
+              const intQuotient = Math.floor(num / divisor)
+              const rest = Math.round(num - intQuotient * divisor)
+              responseDisplay.value = [
+                { type: 'strong', value: `${(intQuotient).toFixed(0)}` },
+                { type: 'points', value: divisor }
+              ]
+
+              if (rest > 0) {
+                // responseDisplay.value.push(
+                //   { type: 'normal', value: `+` },
+                //   { type: 'strong', value: `${rest.toFixed(0)}` }
+                // )
+                responseDisplay.value.push(
+                  { type: 'normal', value: `+` },
+                  { type: 'strong', value: `${rest.toFixed(0)}` },
+                  { type: 'points', value: 1 },
+                )
+              }
+
+              // + = × ÷
+              break
+            }
           }
           break
         case 'display':
@@ -85,17 +217,26 @@ useRafFn
       }
     }
   }, { immediate: true, once: false })
+
 </script>
 
 <template>
   <main class="min-h-dvh flex flex-col items-center justify-center">
-    <div class="text-center" :class="{ 'rotate-90 w-[50dvh]': landscape, 'w-10/12 md:w-1/2': !landscape }">
-      <Constellation v-if="nums !== undefined && state === 'display'" :num="nums[0]" />
-      <Constellation v-if="nums !== undefined && nums.length > 1 && state === 'display'" :num="nums[1]!" class="mt-4" />
+    <div class="text-center flex flex-col justify-center items-center gap-4"
+      :class="{ 'rotate-90 w-[50dvh]': landscape, 'w-10/12 md:w-1/2': !landscape }">
 
-      <span v-if="nums !== undefined && state === 'soluce'" class="text-9xl">{{nums.reduce((total, num) => total +
-        num)
-        }}</span>
+      <template v-if="state === 'display'" v-for="item of questionDisplay">
+
+        <Constellation v-if="item.type === 'constellation'" :num="item.value" class="w-full" />
+        <div v-else-if="item.type === 'operator'" class="text-9xl -my-10 z-10 relative text-base-content">
+          {{ item.value }}
+        </div>
+        <Points v-else-if="item.type === 'points'" :num="item.value" class="text-9xl relative text-base-content">
+        </Points>
+
+      </template>
+
+      <Soluce v-if="state === 'soluce'" class="text-9xl" :values="responseDisplay"></Soluce>
     </div>
 
     <div class="dock dock-xl">
@@ -103,7 +244,8 @@ useRafFn
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-6">
           <g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt">
             <polyline points="1 11 12 2 23 11" fill="none" stroke="currentColor" stroke-miterlimit="10"
-              stroke-width="2"></polyline>
+              stroke-width="2">
+            </polyline>
             <path d="m5,13v7c0,1.105.895,2,2,2h10c1.105,0,2-.895,2-2v-7" fill="none" stroke="currentColor"
               stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
             <line x1="12" y1="22" x2="12" y2="18" fill="none" stroke="currentColor" stroke-linecap="square"

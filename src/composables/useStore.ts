@@ -1,7 +1,16 @@
 import { ref, watch } from "vue";
 
 // Mode
-export const modes = ["1-10", "10-20", "addition"] as const;
+export const modes = [
+  "1-10",
+  "10-20",
+  "addition",
+  "div-2",
+  "div-3",
+  "div-mult",
+  "div-mult-rest",
+  "20-div-mult",
+] as const;
 export type Mode = (typeof modes)[number];
 const mode = ref<Mode>(
   (window.localStorage?.getItem("mode") as Mode) || "1-10",
