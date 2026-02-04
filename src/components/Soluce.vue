@@ -1,20 +1,26 @@
 <script setup lang="ts">
 import type { ConstellationNum } from '@/types/Constellation';
 import Points from '@/components/Points.vue';
+import NeutralValue from './NeutralValue.vue';
+import PrimaryValue from './PrimaryValue.vue';
+import SecondaryValue from './SecondaryValue.vue';
 
-defineProps<{ values: ({ type: 'strong', value: string } | { type: 'normal', value: string } | { type: 'points', value: ConstellationNum })[] }>()
+defineProps<{ values: ({ type: 'primary' | 'secondary', value: string } | { type: 'neutral', value: string } | { type: 'points', value: ConstellationNum })[] }>()
 </script>
 
 <template>
   <div class="flex gap-2 items-end justify-center w-full">
     <template v-for="({ type, value }) of values">
-      <span v-if="type === 'strong'" class="btn btn-xl btn-primary text-6xl py-10">{{
+      <PrimaryValue v-if="type === 'primary'">{{
         value
-      }}</span>
-      <span v-if="type === 'normal'" class="btn btn-xl btn-neutral text-4xl py-8">{{
+      }}</PrimaryValue>
+      <SecondaryValue v-else-if="type === 'secondary'">{{
         value
-      }}</span>
-      <Points v-if="type === 'points'" :num="value"></Points>
+      }}</SecondaryValue>
+      <NeutralValue v-else-if="type === 'neutral'">{{
+        value
+      }}</NeutralValue>
+      <Points v-else-if="type === 'points'" :num="value"></Points>
     </template>
   </div>
 </template>

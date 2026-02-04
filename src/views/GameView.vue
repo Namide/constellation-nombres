@@ -8,6 +8,7 @@ import { useRafFn, useWakeLock } from '@vueuse/core';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Points from '@/components/Points.vue';
+import NeutralValue from '@/components/NeutralValue.vue';
 
 const LOOP_COUNT = 20
 
@@ -32,8 +33,8 @@ const ratio = [5, Number({
   "20-div-mult": 8,
 }[mode.value])] as const
 
-const questionDisplay = ref<({ type: 'operator', value: string } | { type: 'constellation', value: ConstellationNum } | { type: 'points', value: ConstellationNum })[]>([])
-const responseDisplay = ref<({ type: 'strong', value: string } | { type: 'normal', value: string } | { type: 'points', value: ConstellationNum })[]>([])
+const questionDisplay = ref<({ type: 'neutral', value: string } | { type: 'constellation', value: ConstellationNum } | { type: 'points', value: ConstellationNum })[]>([])
+const responseDisplay = ref<({ type: 'primary', value: string } | { type: 'secondary', value: string } | { type: 'neutral', value: string } | { type: 'points', value: ConstellationNum })[]>([])
 
 const random = {
   "1-10": createRNGFromTo(0, 10),
@@ -58,7 +59,7 @@ useRafFn
       pause: 1000,
       display:
         { easy: 2000, medium: 500, hard: 250 }[difficulty.value] *
-        { "1-10": 1, "10-20": 1.5, addition: 2, "div-2": 2, "div-3": 2, "div-mult": 2, "div-mult-rest": 2, "20-div-mult": 2 }[mode.value],
+        { "1-10": 1, "10-20": 1.5, addition: 2, "div-2": 2, "div-3": 2, "div-mult": 2, "div-mult-rest": 2, "20-div-mult": 3 }[mode.value],
       hide: 2000,
       soluce: 2000
     }
@@ -73,13 +74,13 @@ useRafFn
             case '1-10': {
               const num = random() as ConstellationNum
               questionDisplay.value = [{ type: 'constellation', value: num }]
-              responseDisplay.value = [{ type: 'strong', value: `${num}` }]
+              responseDisplay.value = [{ type: 'primary', value: `${num}` }]
               break
             }
             case '10-20': {
               const num = random() as ConstellationNum
               questionDisplay.value = [{ type: 'constellation', value: 10 }, { type: 'constellation', value: num }]
-              responseDisplay.value = [{ type: 'strong', value: `${10 + num}` }]
+              responseDisplay.value = [{ type: 'primary', value: `${10 + num}` }]
               break
             }
             case 'addition': {
@@ -87,21 +88,21 @@ useRafFn
               const num2 = random() as ConstellationNum
               questionDisplay.value = [
                 { type: 'constellation', value: num1 },
-                { type: 'operator', value: '+' },
+                { type: 'neutral', value: '+' },
                 { type: 'constellation', value: num2 }
               ]
-              responseDisplay.value = [{ type: 'strong', value: `${num1 + num2}` }]
+              responseDisplay.value = [{ type: 'primary', value: `${num1 + num2}` }]
               break
             }
             case 'div-2': {
               const num = random() as ConstellationNum
               questionDisplay.value = [
                 { type: 'constellation', value: num },
-                { type: 'operator', value: '÷' },
+                { type: 'neutral', value: '÷' },
                 { type: 'points', value: 2 }
               ]
               responseDisplay.value = [
-                { type: 'strong', value: `${(num / 2).toFixed(0)}` },
+                { type: 'primary', value: `${(num / 2).toFixed(0)}` },
                 { type: 'points', value: 2 }
               ]
               // + = × ÷
@@ -111,11 +112,11 @@ useRafFn
               const num = random() as ConstellationNum
               questionDisplay.value = [
                 { type: 'constellation', value: num },
-                { type: 'operator', value: '÷' },
+                { type: 'neutral', value: '÷' },
                 { type: 'points', value: 3 }
               ]
               responseDisplay.value = [
-                { type: 'strong', value: `${(num / 3).toFixed(0)}` },
+                { type: 'primary', value: `${(num / 3).toFixed(0)}` },
                 { type: 'points', value: 3 }
               ]
               // + = × ÷
@@ -127,11 +128,11 @@ useRafFn
               const divisor = divisors[Math.floor(Math.random() * divisors.length)]!
               questionDisplay.value = [
                 { type: 'constellation', value: num },
-                { type: 'operator', value: '÷' },
+                { type: 'neutral', value: '÷' },
                 { type: 'points', value: divisor }
               ]
               responseDisplay.value = [
-                { type: 'strong', value: `${(num / divisor).toFixed(0)}` },
+                { type: 'primary', value: `${(num / divisor).toFixed(0)}` },
                 { type: 'points', value: divisor }
               ]
               // + = × ÷
@@ -146,14 +147,14 @@ useRafFn
               const divisor = divisors[Math.floor(Math.random() * divisors.length)]!
               questionDisplay.value = [
                 { type: 'constellation', value: num },
-                { type: 'operator', value: '÷' },
+                { type: 'neutral', value: '÷' },
                 { type: 'points', value: Math.floor(divisor) }
               ]
 
               const intQuotient = Math.floor(num / divisor)
               const rest = Math.round(num - intQuotient * divisor)
               responseDisplay.value = [
-                { type: 'strong', value: `${(intQuotient).toFixed(0)}` },
+                { type: 'primary', value: `${(intQuotient).toFixed(0)}` },
                 { type: 'points', value: divisor }
               ]
 
@@ -163,8 +164,8 @@ useRafFn
                 //   { type: 'strong', value: `${rest.toFixed(0)}` }
                 // )
                 responseDisplay.value.push(
-                  { type: 'normal', value: `+` },
-                  { type: 'strong', value: `${rest.toFixed(0)}` },
+                  { type: 'neutral', value: `+` },
+                  { type: 'secondary', value: `${rest.toFixed(0)}` },
                   { type: 'points', value: 1 },
                 )
               }
@@ -183,14 +184,14 @@ useRafFn
               questionDisplay.value = [
                 { type: 'constellation', value: 10 },
                 { type: 'constellation', value: num2 },
-                { type: 'operator', value: '÷' },
+                { type: 'neutral', value: '÷' },
                 { type: 'points', value: Math.floor(divisor) }
               ]
 
               const intQuotient = Math.floor(num / divisor)
               const rest = Math.round(num - intQuotient * divisor)
               responseDisplay.value = [
-                { type: 'strong', value: `${(intQuotient).toFixed(0)}` },
+                { type: 'primary', value: `${(intQuotient).toFixed(0)}` },
                 { type: 'points', value: divisor }
               ]
 
@@ -200,8 +201,8 @@ useRafFn
                 //   { type: 'strong', value: `${rest.toFixed(0)}` }
                 // )
                 responseDisplay.value.push(
-                  { type: 'normal', value: `+` },
-                  { type: 'strong', value: `${rest.toFixed(0)}` },
+                  { type: 'neutral', value: `+` },
+                  { type: 'secondary', value: `${rest.toFixed(0)}` },
                   { type: 'points', value: 1 },
                 )
               }
@@ -246,10 +247,10 @@ useRafFn
       <template v-if="state === 'display'" v-for="item of questionDisplay">
 
         <Constellation v-if="item.type === 'constellation'" :num="item.value" class="w-full" />
-        <div v-else-if="item.type === 'operator'" class="text-9xl -my-10 z-10 relative text-base-content">
+        <NeutralValue v-else-if="item.type === 'neutral'" class="relative">
           {{ item.value }}
-        </div>
-        <Points v-else-if="item.type === 'points'" :num="item.value" class="text-9xl relative text-base-content">
+        </NeutralValue>
+        <Points v-else-if="item.type === 'points'" :num="item.value" class="relative">
         </Points>
 
       </template>
